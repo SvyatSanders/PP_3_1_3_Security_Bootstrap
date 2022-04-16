@@ -28,17 +28,17 @@ public class RegistrationController {
         return "registrationController/registration";
     }
 
-    @PostMapping("/registration")
-    public String addUser(@ModelAttribute("userForm") User userForm, String roleUser, String roleAdmin, Model model) {
-        System.out.println("начинает работать метод public String addUser");
-        System.out.println("roleUser = " + roleUser);
-        System.out.println("roleAdmin = " + roleAdmin);
-
-        if (!userService.saveUser(userForm, roleUser, roleAdmin)) {
-            model.addAttribute("usernameError", "Пользователь с таким именем уже существует");
-            return "registrationController/registration";
-        }
-
-        return "redirect:/admin/";
-    }
+//    @PostMapping("/registration")
+//    public String addUser(@ModelAttribute("userForm") User userForm, String roleUser, String roleAdmin, Model model) {
+//        System.out.println("начинает работать метод public String addUser");
+//        System.out.println("roleUser = " + roleUser);
+//        System.out.println("roleAdmin = " + roleAdmin);
+//
+//        if (!userService.saveUser(userForm, roleUser, roleAdmin)) {
+//            model.addAttribute("usernameError", "Пользователь с таким именем уже существует");
+//            return "registrationController/registration";
+//        }
+//
+//        return "redirect:/admin/";
+//    }
 }

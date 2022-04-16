@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.thymeleaf.dialect.IDialect;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 @Configuration
@@ -36,19 +37,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             // запрос конфигурации разрешений через метод authorizeRequests()
             .authorizeRequests()
                 // доступно неавторизованным пользователям для регистрации
-                .antMatchers("/registration").not().fullyAuthenticated()
+//                .antMatchers("/registration").not().fullyAuthenticated()
                 //Доступ только для пользователей с ролью ADMIN
                 .antMatchers("/admin/**").hasRole("ADMIN") // даем разрешение на просмотр
                 //Доступ только для пользователей с ролью USER
                 .antMatchers("/user").hasAnyRole("USER", "ADMIN") // даем разрешение на просмотр
                 //Доступ разрешен для всех пользователей, данные urls защищать не надо(.permitAll())
-                .antMatchers("/", "/resources/**").permitAll()
+//                .antMatchers("/", "/resources/**").permitAll()
+                .antMatchers("/resources/**").permitAll()
             // Все остальные страницы требуют аутентификации .authenticated()
             .anyRequest().authenticated()
             .and()
                 // Form-Based аутентификация
                 .formLogin()
-                // .loginPage(“/login”) определяется страница для совершения логина в приложение, которая доступна всем
+                // .loginPage("/") //определяется страница для совершения логина в приложение, которая доступна всем
                 // .loginPage("/login")
                 //Перенарпавление на главную страницу после успешного входа
                 .successHandler(successUserHandler)
@@ -58,7 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutUrl("/logout")
                 .permitAll()
-                .logoutSuccessUrl("/");
+                .logoutSuccessUrl("/login");
     }
 
     @Autowired

@@ -12,7 +12,7 @@ public class UserController {
     @GetMapping("/user")
     public String userList(@AuthenticationPrincipal User user, Model model) {
         model.addAttribute("authorisedUser", user);
-        return "userController/user";
+        return "authenticationPage";
     }
 
 

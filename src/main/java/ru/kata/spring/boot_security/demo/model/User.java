@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.model;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -38,9 +39,18 @@ public class User implements UserDetails {
         this.password = password;
     }
 
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return getRoles();
+//    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
+        for (Role role : roles) {
+            grantedAuthorities.add(new SimpleGrantedAuthority((role.getRole())));
+        }
+        return grantedAuthorities;
     }
 
     @Override
@@ -120,7 +130,7 @@ public class User implements UserDetails {
                 ", username='" + username + '\'' +
                 ", age=" + age +
                 ", password='" + password + '\'' +
-                ", roles=" + roles.toString() +
+//                ", roles=" + roles.toString() +
                 '}';
     }
 }

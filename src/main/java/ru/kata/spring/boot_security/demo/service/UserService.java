@@ -35,25 +35,13 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByUsername(username);
 
         if (username == null) {
-            System.out.println("public UserDetails loadUserByUsername(String username) = UsernameNotFoundException(\"User not found\")");
             throw new UsernameNotFoundException("User not found");
         }
 
         return user;
-
-        /* // Ручное получение разрешений, которые у него есть в соответствии с идентификатором пользователя
-        // и добавление его URL-адреса в разрешения пользователя
-
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        System.out.println("работает UserService, user.getRoles() = " + user.getRoles());
-        for (Role role : user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority((role.getRole())));
-        }
-
-        System.out.println("работает UserService, grantedAuthorities = " + grantedAuthorities);
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities); */
     }
 
+    @Transactional
     public User getUserById(Long id) {
         Optional<User> userFromDB = userRepository.findById(id);
         return userFromDB.orElse(new User());
@@ -64,39 +52,23 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public boolean saveUser(User user, String roleUser, String roleAdmin) {
+    public boolean saveUser(User user) {
         if (userRepository.findByUsername(user.getUsername()) != null) {
-            return false;
+            throw new IllegalArgumentException(String.format("User with username %s already exists in database", user.getUsername()));
         }
-        // insert into ROLE (role_id, role_name) values (1, "ROLE_USER");
-        // insert into ROLE (role_id, role_name) values (2, "ROLE_ADMIN");
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        Set<Role> userRoles = new HashSet<>();
-        if (roleUser != null) {
-            userRoles.add(roleRepository.getById(1L));
-        }
-        if (roleAdmin != null) {
-            userRoles.add(roleRepository.getById(2L));
-        }
-        user.setRoles(userRoles);
         userRepository.save(user);
         return true;
     }
 
     @Transactional
-    public boolean updateUser(User user, String roleUser, String roleAdmin) {
-        Set<Role> userRoles = new HashSet<>();
-        if (roleUser != null) {
-            userRoles.add(roleRepository.getById(1L));
-        }
-        if (roleAdmin != null) {
-            userRoles.add(roleRepository.getById(2L));
-        }
-        user.setRoles(userRoles);
+    public boolean updateUser(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return true;
     }
 
+    @Transactional
     public boolean deleteUser(Long id) {
         if (userRepository.findById(id).isPresent()) {
             userRepository.deleteById(id);
@@ -105,9 +77,9 @@ public class UserService implements UserDetailsService {
         return false;
     }
 
-    public List<User> usergtList(Long id) {
-        return entityManager.createQuery("SELECT u FROM User u WHERE u.id > :paramId", User.class)
-                .setParameter("paramId", id).getResultList();
+    @Transactional
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
     }
 
 }
